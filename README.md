@@ -13,6 +13,10 @@ Showroom 自動化相關工具 (目前只有手動下載)
 $ node download.js playlist 46_RISA_WATANABE
 https://hls-origin243...../chunklist.m3u8
 
+# 直接貼網址也可以
+$ node download.js playlist https://www.showroom-live.com/r/48_Haruna_Hashimoto
+https://hls-origin243...../chunklist.m3u8
+
 # 下載 `46_RISA_WATANABE` 的直播到 output.ts
 $ node download.js download 46_RISA_WATANABE output.ts
 
