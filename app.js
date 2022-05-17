@@ -2,24 +2,24 @@ const { spawn } = require('child_process');
 const ffmpegPath = require('ffmpeg-static');
 const fetch = require('node-fetch');
 
-const [_node, _script, input, output] = process.argv;
-
 const fetchApiJson = async (url) => fetch(url).then(r => r.json());
 
 const srApiPrefix = 'https://www.showroom-live.com/api';
 const getRoomApiUrl = (roomUrlKey) => `${srApiPrefix}/room/status?room_url_key=${roomUrlKey}`;
 const getStreamingApiUrl = (roomId) => `${srApiPrefix}/live/streaming_url?room_id=${roomId}`;
 
-async function run() {
-  // run as script
-  const [_node, _script, input, output] = process.argv;
+async function run({
+  command, input, output,
+}) {
 
   const filteredInput = String(input).split('?')[0].split('/').pop();
   if (!filteredInput) {
     console.error('Invalid `room_url_key`');
     process.exit(1);
   }
-  if (!output) {
+
+  const requiresOutput = ['download'];
+  if (requiresOutput.indexOf(command) !== -1 && !output) {
     console.error('Invalid output');
     process.exit(1);
   }
@@ -40,13 +40,28 @@ async function run() {
 
     const { url: bestPlaylistUrl } = streaming_url_list.filter(({type}) => type == 'hls').reduce((a, b) => a.quality >= b.quality ? a : b);
 
-    const subprocess = spawn(ffmpegPath, ['-i', bestPlaylistUrl, '-c', 'copy', '-f', 'mpegts', output], {
-      stdio: ['inherit', 'inherit', 'inherit']
-    });
+    if (command == 'playlist') {
+      console.log(bestPlaylistUrl);
+      return;
+    }
+  
+    if (command == 'download') {
+      const subprocess = spawn(ffmpegPath, ['-i', bestPlaylistUrl, '-c', 'copy', '-f', 'mpegts', output], {
+        stdio: ['inherit', 'inherit', 'inherit']
+      });
+    }
   } catch(e) {
     console.error(e);
     process.exit(1);
   }
 }
 
-if (require.main === module) run();
+if (require.main === module) {
+  // run as script
+  const [_node, _script, command, input, output] = process.argv;
+  run({
+    command,
+    input,
+    output,
+  });
+}
