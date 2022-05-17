@@ -1,0 +1,10 @@
+{
+  "name": "showroom-utils",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "dependencies": {
+    "ffmpeg-static": "^5.0.0",
+    "node-fetch": "2.6"
+  }
+}
