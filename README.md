@@ -2,10 +2,13 @@
 Showroom 自動化相關工具 (目前只有手動下載)
 
 ## Dependencies
-- `node`
-- `yarn`
-  - `npm install -g yarn`
-
+- For node script
+  - `node`
+  - `yarn`
+    - `npm install -g yarn`
+- For shell script
+  - `jq`
+  - `curl`
 ## Usage
 ### app.js
 ```bash
@@ -25,6 +28,19 @@ $ node download.js download akb48_asuyoro pipe:1 | ffmpeg -i pipe:0 -c copy ....
 
 # 下載 `akb48_asuyoro` 的直播，並使用 rclone 直接上傳到遠端
 $ node download.js download akb48_asuyoro pipe:1 | rclone rcat -vvv REMOTE:/FOO/BAR/FILENAME.ts
+```
+
+### get_playlist.sh
+```bash
+# 取得 `48_Haruna_Hashimoto` 的直播最佳 playlist 網址
+$ ./get_playlist.sh 48_Haruna_Hashimoto
+# 若成功會印出網址
+https://hls-origin243...../chunklist.m3u8
+# 若網址錯或沒在直播中會印出訊息，並返回非 0
+48_Haruna_Hashimoto is inactive
+
+# 試圖取得 `48_Erina_Oda` 的直播最佳 playlist 網址，如果成功才呼叫 ffmpeg
+$ URL=`./get_playlist.sh 48_Erina_Oda` && ffmpeg -i $URL
 ```
 
 ## TODO
